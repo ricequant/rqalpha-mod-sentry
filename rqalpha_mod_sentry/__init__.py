@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import click
+from rqalpha import cli
+
 __config__ = {
     "url": None,
     "tags": [
@@ -32,3 +35,13 @@ __config__ = {
 def load_mod():
     from .mod import SentryLogMod
     return SentryLogMod()
+
+
+cli.commands['run'].params.append(
+    click.Option(
+        ('--sentry', 'mod__sentry__url'),
+        default=None,
+        type=click.STRING,
+        help="[sentry] sentry host url"
+    )
+)

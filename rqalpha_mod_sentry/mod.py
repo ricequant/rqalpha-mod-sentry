@@ -29,13 +29,15 @@ class ErrorSentryHandler(SentryHandler):
 
 class SentryLogMod(AbstractMod):
     def start_up(self, env, mod_config):
+        sentry_url = mod_config.url
+        if sentry_url is None:
+            return
         try:
             tags = dict()
             config = env.config
             for tag in mod_config.tags:
                 split_t = tag.split("__")
                 split_t.reverse()
-                tag_name = None
                 tag_value = config
                 while True:
                     tag_name = split_t.pop()
@@ -43,7 +45,7 @@ class SentryLogMod(AbstractMod):
                     if len(split_t) == 0:
                         break
                 tags[tag_name] = tag_value
-            client = client(mod_config.url, tags=tags)
+            client = Client(sentry_url, tags=tags)
             handler = ErrorSentryHandler(client, bubble=True)
             env.user_detail_log.handlers.append(handler)
             env.system_log.handlers.append(handler)
